@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inner Sanctuary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --cream: #FAF6EF;
+      --parchment: #F0E8D8;
+      --gold: #C9A84C;
+      --gold-light: #E8D5A3;
+      --gold-dark: #8B6914;
+      --charcoal: #2C2820;
+      --ink: #4A3F33;
+      --muted: #8A7A68;
+      --border: rgba(201,168,76,0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(122,140,110,0.06) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+    }
+    .app-wrapper { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 2.5rem; }
+    .header-ornament { font-size: 20px; color: var(--gold); letter-spacing: 12px; display: block; margin-bottom: 0.75rem; }
+    .header h1 { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: var(--charcoal); letter-spacing: 3px; line-height: 1.1; }
+    .header h1 em { font-style: italic; color: var(--gold-dark); }
+    .header p { margin-top: 0.6rem; font-size: 13px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+    /* Tabs */
+    .tab-bar { display: flex; border: 0.5px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 2rem; background: var(--parchment); }
+    .tab { flex: 1; padding: 10px 4px; text-align: center; font-size: 10px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; color: var(--muted); border-right: 0.5px solid var(--border); transition: all 0.2s; background: transparent; border-top: none; border-bottom: none; border-left: none; }
+    .tab:last-child { border-right: none; }
+    .tab:hover { color: var(--gold-dark); background: rgba(201,168,76,0.06); }
+    .tab.active { color: var(--gold-dark); background: var(--cream); font-weight: 500; box-shadow: inset 0 -2px 0 var(--gold); }
+
+    /* Quote card */
+    .quote-card { background: var(--cream); border: 0.5px solid var(--border); border-radius: 4px; padding: 2.5rem 2.5rem 2rem; position: relative; margin-bottom: 1.5rem; min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; }
+    .quote-card::before { content: '\201C'; font-family: 'Cormorant Garamond', serif; font-size: 80px; color: var(--gold-light); position: absolute; top: 8px; left: 18px; line-height: 1; }
+    .quote-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.65; color: var(--ink); font-style: italic; margin-top: 1.2rem; flex: 1; }
+    .quote-meta { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 0.5px solid var(--border); gap: 12px; flex-wrap: wrap; }
+    .quote-author { font-size: 13px; font-weight: 300; letter-spacing: 0.5px; color: var(--muted); }
+    .tradition-badge { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
+    .t-christianity { background: #EEF0F8; color: #3A4A8A; }
+    .t-islam { background: #EEF5EE; color: #2A6A2A; }
+    .t-hinduism { background: #FDF3E8; color: #8A4A10; }
+    .t-buddhism { background: #FEF8E6; color: #8A6010; }
+    .t-stoicism { background: #EEEEEE; color: #444444; }
+    .t-secular { background: #F3EEF8; color: #5A3A8A; }
+
+    .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .filter-btn { padding: 5px 14px; border-radius: 2px; border: 0.5px solid var(--border); font-size: 11px; font-weight: 400; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s; }
+    .filter-btn:hover { color: var(--gold-dark); border-color: var(--gold); }
+    .filter-btn.active { background: var(--gold); color: white; border-color: var(--gold); }
+
+    .nav-row { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .nav-btn { padding: 9px 22px; border: 0.5px solid var(--border); border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; background: transparent; color: var(--ink); transition: all 0.2s; }
+    .nav-btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .save-btn { padding: 9px 22px; border: 0.5px solid var(--gold); border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; background: var(--gold); color: white; transition: all 0.2s; }
+    .save-btn:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+
+    /* Breathe */
+    .breathe-wrapper { text-align: center; padding: 1rem 0; }
+    .breath-ring-outer { width: 160px; height: 160px; border-radius: 50%; border: 0.5px solid var(--gold-light); margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 4s ease-in-out; }
+    .breath-ring-inner { width: 120px; height: 120px; border-radius: 50%; border: 0.5px solid var(--gold); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, rgba(201,168,76,0.08), transparent); }
+    .breath-text { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--gold-dark); text-align: center; padding: 0 16px; line-height: 1.4; }
+    .breath-ring-outer.expanding { transform: scale(1.4); }
+    .breath-ring-outer.contracting { transform: scale(1); }
+    .breath-instruction { font-size: 13px; font-weight: 300; letter-spacing: 1px; color: var(--muted); margin-bottom: 2rem; }
+    .still-card { background: var(--parchment); border: 0.5px solid var(--border); border-radius: 4px; padding: 1.75rem 2rem; }
+    .still-card p { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; line-height: 1.8; color: var(--ink); }
+
+    /* Forms */
+    .form-wrapper { display: flex; flex-direction: column; gap: 1.25rem; }
+    .field-label { font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; display: block; }
+    textarea.styled { width: 100%; border: 0.5px solid var(--border); border-radius: 4px; padding: 1rem 1.25rem; font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic; line-height: 1.7; color: var(--ink); background: var(--parchment); resize: vertical; outline: none; transition: border-color 0.2s; }
+    textarea.styled:focus { border-color: var(--gold); }
+    input.styled { width: 100%; border: 0.5px solid var(--border); border-radius: 4px; padding: 10px 14px; font-family: 'Jost', sans-serif; font-size: 14px; color: var(--ink); background: var(--parchment); outline: none; transition: border-color 0.2s; }
+    input.styled:focus { border-color: var(--gold); }
+    select.styled { width: 100%; border: 0.5px solid var(--border); border-radius: 4px; padding: 10px 14px; font-family: 'Jost', sans-serif; font-size: 14px; color: var(--ink); background: var(--parchment); outline: none; appearance: none; cursor: pointer; }
+    select.styled:focus { border-color: var(--gold); }
+    .notice-box { background: rgba(201,168,76,0.06); border: 0.5px solid var(--border); border-left: 2px solid var(--gold); border-radius: 2px; padding: 12px 16px; font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.8; }
+    .notice-box strong { font-weight: 500; color: var(--ink); }
+    .add-btn { padding: 10px 26px; border: 0.5px solid var(--gold); border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; background: var(--gold); color: white; transition: all 0.2s; }
+    .add-btn:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+    .haiku-hint { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 4px; }
+
+    /* Saved */
+    .saved-list { display: flex; flex-direction: column; gap: 1rem; }
+    .saved-item { background: var(--parchment); border: 0.5px solid var(--border); border-radius: 4px; padding: 1.25rem 1.5rem; border-left: 2px solid var(--gold); }
+    .saved-item p { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: var(--ink); line-height: 1.6; white-space: pre-wrap; }
+    .saved-item .saved-meta { font-size: 12px; font-weight: 300; color: var(--muted); margin-top: 8px; }
+
+    /* Community */
+    .type-badge { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; margin-bottom: 8px; }
+    .type-quote { background: #EEF0F8; color: #3A4A8A; }
+    .type-haiku { background: #EEF5EE; color: #2A6A2A; }
+    .type-poem { background: #FDF3E8; color: #8A4A10; }
+    .community-card { background: var(--cream); border: 0.5px solid var(--border); border-radius: 4px; padding: 1.75rem 2rem 1.5rem; margin-bottom: 1rem; }
+    .community-card .c-title { font-size: 13px; font-weight: 500; letter-spacing: 1px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; font-family: 'Jost', sans-serif; }
+    .community-card .c-text { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; line-height: 1.75; color: var(--ink); white-space: pre-wrap; margin-bottom: 1rem; }
+    .community-card .c-meta { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 0.5px solid var(--border); flex-wrap: wrap; gap: 8px; }
+    .community-card .c-author { font-size: 13px; font-weight: 300; color: var(--muted); }
+    .community-card .c-date { font-size: 11px; color: var(--muted); }
+    .heart-btn { background: none; border: 0.5px solid var(--border); cursor: pointer; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 2px; transition: all 0.2s; font-family: 'Jost', sans-serif; }
+    .heart-btn:hover { border-color: #c84b6e; color: #c84b6e; }
+    .heart-btn.liked { color: #c84b6e; border-color: #c84b6e; background: #fdf0f4; }
+
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(44,40,32,0.55); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--cream); border: 0.5px solid var(--border); border-radius: 4px; padding: 2rem; max-width: 480px; width: 90%; }
+    .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; color: var(--charcoal); margin-bottom: 1rem; }
+    .modal p { font-size: 13px; line-height: 1.8; color: var(--muted); margin-bottom: 1rem; }
+    .modal ul { font-size: 13px; line-height: 2.2; color: var(--ink); padding-left: 1.25rem; margin-bottom: 1.25rem; }
+    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel { padding: 9px 20px; border: 0.5px solid var(--border); border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; background: transparent; color: var(--muted); }
+    .btn-confirm { padding: 9px 20px; border: 0.5px solid var(--gold); border-radius: 2px; font-family: 'Jost', sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; background: var(--gold); color: white; }
+
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: var(--charcoal); margin-bottom: 1.25rem; }
+    .empty-state { text-align: center; padding: 3rem 2rem; color: var(--muted); font-size: 15px; font-style: italic; font-family: 'Cormorant Garamond', serif; line-height: 1.8; }
+  </style>
+</head>
+<body>
+
+<!-- Publish confirmation modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Before you publish</h2>
+    <p>Inner Sanctuary is a space for sincere reflection and creative expression. Before sharing with the community, please confirm that your writing:</p>
+    <ul>
+      <li>Does not mock, misrepresent, or demean any religion or belief</li>
+      <li>Does not contain hate speech or discriminatory language</li>
+      <li>Does not exploit religious symbols or texts for provocation</li>
+      <li>Is your own original work, or clearly attributed to its source</li>
+      <li>Is written in a spirit of sincerity, care, and good faith</li>
+    </ul>
+    <p>By publishing you agree to these community guidelines.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Go back</button>
+      <button class="btn-confirm" onclick="confirmPublish()">I agree — publish</button>
+    </div>
+  </div>
+</div>
+
+<div class="app-wrapper">
+  <div class="header">
+    <span class="header-ornament">✦ ✦ ✦</span>
+    <h1>Inner <em>Sanctuary</em></h1>
+    <p>A quiet space for reflection &amp; wisdom</p>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('quotes')">Wisdom</button>
+    <button class="tab" onclick="switchTab('breathe')">Breathe</button>
+    <button class="tab" onclick="switchTab('journal')">Journal</button>
+    <button class="tab" onclick="switchTab('create')">Create</button>
+    <button class="tab" onclick="switchTab('community')">Community</button>
+    <button class="tab" onclick="switchTab('saved')">Saved</button>
+  </div>
+
+  <!-- WISDOM TAB -->
+  <div id="tab-quotes">
+    <div class="filter-bar" id="filters"></div>
+    <div class="quote-card">
+      <p class="quote-text" id="q-text"></p>
+      <div class="quote-meta">
+        <span class="quote-author" id="q-author"></span>
+        <span class="tradition-badge" id="q-tradition"></span>
+      </div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" onclick="prevQuote()">← Previous</button>
+      <button class="save-btn" id="save-btn" onclick="saveQuote()">Save quote</button>
+      <button class="nav-btn" onclick="nextQuote()">Next →</button>
+    </div>
+  </div>
+
+  <!-- BREATHE TAB -->
+  <div id="tab-breathe" style="display:none">
+    <div class="breathe-wrapper">
+      <p class="section-title" style="text-align:center;margin-bottom:1.5rem">Take a moment. Just breathe.</p>
+      <div class="breath-ring-outer" id="breath-circle" onclick="startBreath()">
+        <div class="breath-ring-inner">
+          <span class="breath-text" id="breath-text">Tap to begin</span>
+        </div>
+      </div>
+      <p class="breath-instruction" id="breath-instruction">Click the circle to start a guided breathing exercise</p>
+    </div>
+    <div class="still-card">
+      <p>Close your eyes. Breathe in slowly. Notice where tension lives in your body. With each exhale, let it soften. You are exactly where you need to be.</p>
+    </div>
+  </div>
+
+  <!-- JOURNAL TAB (private) -->
+  <div id="tab-journal" style="display:none">
+    <div class="form-wrapper">
+      <p class="section-title">Private journal</p>
+      <div class="notice-box">
+        This is your <strong>private space</strong>. Nothing here is published or shared with anyone. Write freely — your thoughts, emotions, or reflections. All traditions are treated with equal respect.
+      </div>
+      <div>
+        <label class="field-label">Your reflection</label>
+        <textarea class="styled" id="j-text" rows="6" placeholder="What's on your heart today?"></textarea>
+      </div>
+      <div>
+        <label class="field-label">Your name (optional)</label>
+        <input class="styled" id="j-author" type="text" placeholder="Leave blank to stay anonymous" />
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="add-btn" id="add-btn" onclick="addJournalEntry()">Save privately</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE TAB -->
+  <div id="tab-create" style="display:none">
+    <div class="form-wrapper">
+      <p class="section-title">Share your voice</p>
+      <div class="notice-box">
+        Write a <strong>quote, haiku, or poem</strong> to share with the Inner Sanctuary community. Your piece will appear in the Community feed once you confirm the guidelines. Please be original, kind, and respectful of all traditions and beliefs.
+      </div>
+      <div>
+        <label class="field-label">Type of writing</label>
+        <select class="styled" id="c-type" onchange="onTypeChange()">
+          <option value="quote">Quote</option>
+          <option value="haiku">Haiku</option>
+          <option value="poem">Poem</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Title (optional)</label>
+        <input class="styled" id="c-title" type="text" placeholder="Give your piece a name…" />
+      </div>
+      <div>
+        <label class="field-label" id="c-content-label">Your quote</label>
+        <textarea class="styled" id="c-text" rows="6" placeholder="Write your quote here…"></textarea>
+        <p class="haiku-hint" id="c-hint" style="display:none"></p>
+      </div>
+      <div>
+        <label class="field-label">Your name or pen name</label>
+        <input class="styled" id="c-author" type="text" placeholder="How would you like to be known?" />
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="add-btn" onclick="openModal()">Publish to community →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY TAB -->
+  <div id="tab-community" style="display:none">
+    <p class="section-title">Community voices</p>
+    <div class="filter-bar" id="community-filters"></div>
+    <div id="community-feed"></div>
+  </div>
+
+  <!-- SAVED TAB -->
+  <div id="tab-saved" style="display:none">
+    <p class="section-title">Your saved wisdom</p>
+    <div class="saved-list" id="saved-list"></div>
+  </div>
+</div>
+
+<script>
+  const quotes = [
+    { text: "Be still, and know that I am God.", author: "Psalms 46:10", tradition: "Christianity", cls: "t-christianity" },
+    { text: "Indeed, with hardship comes ease.", author: "Quran 94:6", tradition: "Islam", cls: "t-islam" },
+    { text: "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.", author: "Bhagavad Gita 2:47", tradition: "Hinduism", cls: "t-hinduism" },
+    { text: "Peace comes from within. Do not seek it without.", author: "The Buddha", tradition: "Buddhism", cls: "t-buddhism" },
+    { text: "You have power over your mind, not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius", tradition: "Stoicism", cls: "t-stoicism" },
+    { text: "The wound is the place where the light enters you.", author: "Rumi", tradition: "Islam", cls: "t-islam" },
+    { text: "He who knows others is wise; he who knows himself is enlightened.", author: "Lao Tzu", tradition: "Stoicism", cls: "t-stoicism" },
+    { text: "The soul that sees beauty may sometimes walk alone.", author: "Johann Wolfgang von Goethe", tradition: "Secular", cls: "t-secular" },
+    { text: "Let your light so shine before men, that they may see your good works.", author: "Matthew 5:16", tradition: "Christianity", cls: "t-christianity" },
+    { text: "When you realize how perfect everything is, you will tilt your head back and laugh at the sky.", author: "The Buddha", tradition: "Buddhism", cls: "t-buddhism" },
+    { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela", tradition: "Secular", cls: "t-secular" },
+    { text: "Your task is not to seek for love, but merely to seek and find all the barriers within yourself that you have built against it.", author: "Rumi", tradition: "Islam", cls: "t-islam" },
+    { text: "Do not be anxious about tomorrow, for tomorrow will be anxious for itself.", author: "Matthew 6:34", tradition: "Christianity", cls: "t-christianity" },
+    { text: "Find joy in the well-being of others.", author: "Buddhist teaching (Mudita)", tradition: "Buddhism", cls: "t-buddhism" },
+    { text: "Waste no more time arguing about what a good person should be. Be one.", author: "Marcus Aurelius", tradition: "Stoicism", cls: "t-stoicism" },
+    { text: "God does not burden a soul beyond that it can bear.", author: "Quran 2:286", tradition: "Islam", cls: "t-islam" },
+    { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein", tradition: "Secular", cls: "t-secular" },
+    { text: "The Atman is never born nor dies at any time.", author: "Bhagavad Gita 2:20", tradition: "Hinduism", cls: "t-hinduism" },
+    { text: "The universe is not outside of you. Look inside yourself; everything that you want, you are already that.", author: "Rumi", tradition: "Islam", cls: "t-islam" },
+    { text: "Not all storms come to disrupt your life — some come to clear your path.", author: "Anonymous", tradition: "Secular", cls: "t-secular" },
+  ];
+
+  const traditions = ["All","Christianity","Islam","Hinduism","Buddhism","Stoicism","Secular"];
+  const communityTypes = ["All","Quote","Haiku","Poem"];
+
+  let communityPosts = [
+    { type:"haiku", title:"Morning light", text:"Silence before dawn\nA breath caught between two worlds\nThe self finds itself", author:"Priya M.", date:"Apr 2025", likes:14, liked:false },
+    { type:"poem", title:"The returning", text:"I come back to myself\nthe way water returns to the sea —\nnot rushing, not resisting,\njust following what has always been true.", author:"Daniel O.", date:"Apr 2025", likes:9, liked:false },
+    { type:"quote", title:"", text:"Healing is not linear. Some days you are the river; some days you are the stone.", author:"Amara S.", date:"Mar 2025", likes:22, liked:false },
+    { type:"haiku", title:"Letting go", text:"The hand opens wide\nWhat was clutched flies like sparrows\nThe palm — still, and free", author:"Kenji T.", date:"Mar 2025", likes:17, liked:false },
+    { type:"poem", title:"Threshold", text:"Every morning is a door.\nI do not know what room lies beyond —\nonly that my hand is on the handle,\nonly that I am learning to turn it.", author:"Sofia N.", date:"Feb 2025", likes:31, liked:false },
+  ];
+
+  let activeFilter = "All";
+  let communityFilter = "All";
+  let filteredQuotes = [...quotes];
+  let currentIndex = 0;
+  let savedItems = [];
+  let breathRunning = false;
+  let breathPhase = 0;
+  let pendingPost = null;
+
+  const breathPhases = [
+    { label:"Breathe in…", sub:"4 seconds", dur:4000, expand:true },
+    { label:"Hold…", sub:"4 seconds", dur:4000, expand:true },
+    { label:"Breathe out…", sub:"6 seconds", dur:6000, expand:false },
+    { label:"Rest…", sub:"2 seconds", dur:2000, expand:false },
+  ];
+
+  const tabIds = ['quotes','breathe','journal','create','community','saved'];
+
+  function switchTab(tab) {
+    tabIds.forEach(t => document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none');
+    document.querySelectorAll('.tab').forEach((el,i) => el.classList.toggle('active', tabIds[i]===tab));
+    if (tab==='saved') renderSaved();
+    if (tab==='community') renderCommunity();
+  }
+
+  function renderFilters() {
+    document.getElementById('filters').innerHTML = traditions.map(t =>
+      `<button class="filter-btn ${activeFilter===t?'active':''}" onclick="setFilter('${t}')">${t}</button>`
+    ).join('');
+  }
+  function setFilter(t) {
+    activeFilter=t; filteredQuotes=t==="All"?[...quotes]:quotes.filter(q=>q.tradition===t);
+    currentIndex=0; renderFilters(); showQuote();
+  }
+  function showQuote() {
+    if (!filteredQuotes.length) return;
+    const q=filteredQuotes[currentIndex];
+    document.getElementById('q-text').textContent=q.text;
+    document.getElementById('q-author').textContent="— "+q.author;
+    const tr=document.getElementById('q-tradition');
+    tr.textContent=q.tradition; tr.className='tradition-badge '+q.cls;
+  }
+  function nextQuote() { currentIndex=(currentIndex+1)%filteredQuotes.length; showQuote(); }
+  function prevQuote() { currentIndex=(currentIndex-1+filteredQuotes.length)%filteredQuotes.length; showQuote(); }
+  function saveQuote() {
+    const q=filteredQuotes[currentIndex];
+    savedItems.unshift({text:q.text,author:q.author,type:'quote'});
+    const btn=document.getElementById('save-btn');
+    btn.textContent='Saved!'; setTimeout(()=>btn.textContent='Save quote',1500);
+  }
+
+  function addJournalEntry() {
+    const text=document.getElementById('j-text').value.trim();
+    const author=document.getElementById('j-author').value.trim()||'Anonymous';
+    if (!text) return;
+    savedItems.unshift({text,author,type:'personal'});
+    document.getElementById('j-text').value='';
+    document.getElementById('j-author').value='';
+    const btn=document.getElementById('add-btn');
+    btn.textContent='Saved!'; setTimeout(()=>btn.textContent='Save privately',1500);
+  }
+
+  function renderSaved() {
+    const el=document.getElementById('saved-list');
+    if (!savedItems.length) { el.innerHTML='<div class="empty-state">Nothing saved yet.<br>Explore the Wisdom tab or write in your journal.</div>'; return; }
+    el.innerHTML=savedItems.map(item=>`<div class="saved-item"><p>"${escHtml(item.text)}"</p><div class="saved-meta">${item.type==='personal'?'Your words — '+escHtml(item.author):'— '+escHtml(item.author)}</div></div>`).join('');
+  }
+
+  const hints = {
+    quote: { label:"Your quote", placeholder:"Write your quote here…", hint:"" },
+    haiku: { label:"Your haiku (5 · 7 · 5 syllables)", placeholder:"Line one — 5 syllables\nLine two — 7 syllables\nLine three — 5 syllables", hint:"Traditional haiku: three lines, 5–7–5 syllable pattern" },
+    poem:  { label:"Your poem", placeholder:"Write your poem here…\nLine breaks will be preserved exactly as you write them.", hint:"Any form, any length — free verse, rhymed, or structured. Your choice." },
+  };
+
+  function onTypeChange() {
+    const type=document.getElementById('c-type').value;
+    const h=hints[type];
+    document.getElementById('c-content-label').textContent=h.label;
+    document.getElementById('c-text').placeholder=h.placeholder;
+    document.getElementById('c-text').rows=type==='haiku'?4:8;
+    const hintEl=document.getElementById('c-hint');
+    if (h.hint) { hintEl.textContent=h.hint; hintEl.style.display='block'; } else { hintEl.style.display='none'; }
+  }
+
+  function openModal() {
+    const text=document.getElementById('c-text').value.trim();
+    if (!text) { alert('Please write something before publishing.'); return; }
+    const author=document.getElementById('c-author').value.trim()||'Anonymous';
+    const type=document.getElementById('c-type').value;
+    const title=document.getElementById('c-title').value.trim();
+    const now=new Date(); const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    pendingPost={type,title,text,author,date:months[now.getMonth()]+' '+now.getFullYear(),likes:0,liked:false};
+    document.getElementById('modal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('modal').classList.remove('open'); pendingPost=null; }
+
+  function confirmPublish() {
+    if (!pendingPost) return;
+    communityPosts.unshift(pendingPost);
+    pendingPost=null;
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('c-text').value='';
+    document.getElementById('c-title').value='';
+    document.getElementById('c-author').value='';
+    switchTab('community');
+  }
+
+  function renderCommunityFilters() {
+    document.getElementById('community-filters').innerHTML = communityTypes.map(t =>
+      `<button class="filter-btn ${communityFilter===t?'active':''}" onclick="setCommunityFilter('${t}')">${t==='All'?'All':t+'s'}</button>`
+    ).join('');
+  }
+  function setCommunityFilter(t) { communityFilter=t; renderCommunity(); }
+
+  function renderCommunity() {
+    renderCommunityFilters();
+    const feed=document.getElementById('community-feed');
+    const filtered=communityFilter==='All'?communityPosts:communityPosts.filter(p=>p.type===communityFilter.toLowerCase());
+    if (!filtered.length) { feed.innerHTML='<div class="empty-state">No pieces here yet.<br>Be the first — visit the Create tab to share.</div>'; return; }
+    feed.innerHTML=filtered.map(post=>{
+      const realIdx=communityPosts.indexOf(post);
+      return `<div class="community-card">
+        <span class="type-badge type-${post.type}">${post.type}</span>
+        ${post.title?`<div class="c-title">${escHtml(post.title)}</div>`:''}
+        <div class="c-text">${escHtml(post.text)}</div>
+        <div class="c-meta">
+          <span class="c-author">— ${escHtml(post.author)}</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="c-date">${post.date}</span>
+            <button class="heart-btn ${post.liked?'liked':''}" onclick="toggleLike(${realIdx})">${post.liked?'♥':'♡'} ${post.likes}</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleLike(idx) {
+    communityPosts[idx].liked=!communityPosts[idx].liked;
+    communityPosts[idx].likes+=communityPosts[idx].liked?1:-1;
+    renderCommunity();
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function startBreath() {
+    if (breathRunning) { breathRunning=false; document.getElementById('breath-instruction').textContent='Paused. Tap to resume.'; document.getElementById('breath-text').textContent='Resume'; return; }
+    breathRunning=true; runBreathPhase();
+  }
+  function runBreathPhase() {
+    if (!breathRunning) return;
+    const p=breathPhases[breathPhase%breathPhases.length];
+    document.getElementById('breath-text').textContent=p.label;
+    document.getElementById('breath-instruction').textContent=p.sub;
+    document.getElementById('breath-circle').className='breath-ring-outer '+(p.expand?'expanding':'contracting');
+    breathPhase++;
+    setTimeout(()=>{ if (breathRunning) runBreathPhase(); },p.dur);
+  }
+
+  renderFilters(); showQuote(); renderSaved(); onTypeChange();
+</script>
+</body>
+</html>
